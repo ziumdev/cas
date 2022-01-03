@@ -13,3 +13,4 @@ casHost = '0.0.0.0'
 casPort = 4001
 unitId = 1
 buffSize = 1024
+regiment = "RG-280"

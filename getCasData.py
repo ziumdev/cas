@@ -7,17 +7,20 @@ import DatabaseClass
 
 
 class MyTCPHandler(socketserver.BaseRequestHandler):
+	maxValue = 0
+
 	def handle(self):
 		self.dataList = self.request.recv(1024).strip()
-		print(self.dataList)
-		dataArr = []
-		if len(self.dataList) > 0:
-			for data in self.dataList:
-				dataArr.append(data)
-				if len(dataArr) == 10:
-					weight = 60
-					insertData(weight)
-					break
+		val = self.dataList.decode('utf-8')
+		print(val)
+		try:
+			if float(val) > 0:
+				weight = val
+				print("weight is " + str(weight))
+				insertData(weight)
+				print("insert OK")
+		except Exception as e:
+			print(e)
 
 
 def getCasData():
@@ -58,7 +61,7 @@ def insertData(weight):
 	db.__init__(DatabaseClass.Database)
 	deviceNo = extConfig.unitId
 	now = int(time.time())
-	insertQuery = 'Insert into public.cas (device_no, weight, ftime) values (%s, %s, %s)'
+	insertQuery = 'Insert into s_army.cas (device_no, weight, ftime) values (%s, %s, %s)'
 	param = (deviceNo, weight, now)
 	db.insertQuery(db, insertQuery, param)
 	db.close(db)

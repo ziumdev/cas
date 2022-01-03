@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_apscheduler import APScheduler
 from flask_restful import Api
-import getCasData, getCasApi
+import getCasData as getCas, getCasApi
 
 app = Flask(__name__)
 api = Api(app)
@@ -10,8 +10,11 @@ api = Api(app)
 api.add_resource(getCasApi.getCasDbData, "/getCasData")
 api.add_resource(getCasApi.getLatestCasDbData, "/getLatestCasData")
 
+
 if __name__ == '__main__':
     scheduler = APScheduler()
-    scheduler.add_job(id='get cas data', func=getCasData.getCasData)  # 중량 감지기 테스트
+    scheduler.add_job(id='get cas data', func=getCas.getCasData)  # 중량 감지기 테스트
     scheduler.start()
     app.run(host='0.0.0.0', port=50001)
+
+

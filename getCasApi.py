@@ -29,15 +29,18 @@ class getCasDbData(Resource):
             parser.add_argument('startTime', required=True, type=float, help='startTime is requested')
             parser.add_argument('endTime', required=True, type=float, help='endTime is requested')
             args = parser.parse_args()
-            qry = 'select * from public.cas where ftime between %s and %s ;'        # 데이터를 가져오는 쿼리
+            qry = 'select * from s_army.cas where ftime between %s and %s ;'        # 데이터를 가져오는 쿼리
             param = (args['startTime'], args['endTime'])
             resultList = db.parameterQuery(DatabaseClass.Database, qry, param)
             db.close(DatabaseClass.Database)
-            return json.dumps({
+            data = json.dumps({
                 "responseCode": 2000,
                 "count": len(resultList),
-                "result": resultList
+                "result": resultList,
+                "Regiment": extConfig.regiment
             }, cls=JSONEncoder)
+            print(data)
+            return json.loads(data)
 
         except Exception as e:
             return json.dumps({
@@ -48,19 +51,21 @@ class getCasDbData(Resource):
 
 class getLatestCasDbData(Resource):
     def post(self):
-        latestQry = 'select * from public.cas where ftime = (select max(ftime) from public.cas);'  # 마지막 데이터를 가져오는 쿼리
+        latestQry = 'select * from s_army.cas where ftime = (select max(ftime) from s_army.cas);'  # 마지막 데이터를 가져오는 쿼리
         db = DatabaseClass.Database
         db.__init__(DatabaseClass.Database)
         result = db.query(db, latestQry)
         db.close(DatabaseClass.Database)
         print(result)
-        print(result['ftime'])
-        return json.dumps({
+        data = json.dumps({
                 "responseCode": 2000,
                 "result": {
                     'id': result['id'],
                     'device_no': result['device_no'],
                     'weight': str(result['weight']),
-                    'ftime': str(result['ftime'])
+                    'ftime': str(result['ftime']),
+                    "Regiment": extConfig.regiment
                 }
             }, default=default)
+        print(data)
+        return json.loads(data)
